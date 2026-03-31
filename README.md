@@ -181,9 +181,9 @@ address: string - адрес
 
 Методы:
 setData(data: Partial<IBuyer>): void — сохранение данных
-getData(): IBuyer - получение всех данных
+getData(): Partial<IBuyer> - получение всех данных
 clear(): void- очистка данных
-validate(): Record<string, string> - проверка данных
+validate(): TValidationErrors- проверка данных
 
 Пример результата валидации:
 {
@@ -202,9 +202,8 @@ validate(): Record<string, string> - проверка данных
 constructor(api: IApi)
 
 Параметры:
-api: IApi - объект для выполнения запросов
+api: IApi  объект для выполнения запросов
 
 Методы:
-getProducts(): Promise<{ items: IProduct[] }> - получает список товаров с сервера
-
-createOrder(order: IOrder): Promise<{ total: number }> - отправляет заказ на сервер
+getProducts(): Promise<IProductsResponse>  получает список товаров с сервера
+createOrder(order: IOrder): Promise<IOrderResponse>  отправляет заказ на сервер

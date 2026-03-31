@@ -1,5 +1,6 @@
 import { IBuyer } from '../../types';
 
+type TValidationErrors = Record<string, string>;
 export class Buyer {
   private data: Partial<IBuyer> = {};
 
@@ -15,8 +16,8 @@ export class Buyer {
     this.data = {};
   }
 
-  validate(): Record<string, string> {
-    const errors: Record<string, string> = {};
+  validate(): TValidationErrors {
+    const errors: TValidationErrors = {};
 
     if (!this.data.payment) {
       errors.payment = 'Не выбран способ оплаты';

@@ -28,3 +28,13 @@ export interface IOrder {
   phone: string;
   address: string;
 }
+
+export interface IProductsResponse {
+  items: IProduct[];
+  total: number;
+}
+
+export interface IOrderResponse {
+  id: string;
+  total: number;
+}
