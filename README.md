@@ -98,3 +98,113 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+## Данные
+
+### Товар
+interface IProduct {
+  id: string;
+  description: string;
+  image: string;
+  title: string;
+  category: string;
+  price: number | null;
+}
+
+Описание:
+id  уникальный идентификатор товара
+description  описание товара
+image  ссылка на изображение
+title  название товара
+category  категория товара
+price  цена товара (может быть null)
+
+### Покупатель
+interface IBuyer {
+  payment: 'card' | 'cash' | '';
+  email: string;
+  phone: string;
+  address: string;
+}
+
+Описание:
+payment  способ оплаты
+email  электронная почта
+phone  номер телефона
+address  адрес доставки
+
+
+## Модели данных
+
+### Каталог товаров - ProductCatalog
+
+Назначение:
+Класс отвечает за хранение и управление списком товаров.
+
+Поля:
+products: IProduct[]  массив товаров
+selectedProduct: IProduct | null  выбранный товар
+
+Методы:
+setProducts(products: IProduct[]): void  сохраняет массив товаров
+getProducts(): IProduct[]  возвращает все товары
+getProductById(id: string): IProduct | undefined возвращает товар по id
+setSelectedProduct(product: IProduct): void  сохраняет выбранный товар
+getSelectedProduct(): IProduct | null  возвращает выбранный товар
+
+### Корзина - Basket
+
+Назначение:
+Хранить товары, выбранные пользователем для покупки.
+
+Поля:
+items: IProduct[]  массив товаров
+
+Методы:
+getItems(): IProduct[]  получение товаров из корзины
+addItem(product: IProduct): void  добавление товара
+removeItem(product: IProduct): void  удаление товара
+clear(): void  очистка корзины
+getTotalPrice(): number  общая стоимость товаров
+getTotalCount(): number  количество товаров
+hasItem(id: string): boolean  проверка наличия товара
+
+### Покупатель - Buyer
+
+Назначение:
+Хранит данные пользователя для оформления заказа.
+
+Поля:
+payment: 'card' | 'cash' | '' - способ оплаты
+email: string - email
+phone: string - телефон
+address: string - адрес
+
+Методы:
+setData(data: Partial<IBuyer>): void — сохранение данных
+getData(): IBuyer - получение всех данных
+clear(): void- очистка данных
+validate(): Record<string, string> - проверка данных
+
+Пример результата валидации:
+{
+  payment: 'Не выбран способ оплаты',
+  email: 'Укажите email'
+}
+
+## Слой коммуникации
+
+### Класс ApiService
+
+Назначение:
+Класс отвечает за взаимодействие с сервером
+
+Конструктор:
+constructor(api: IApi)
+
+Параметры:
+api: IApi - объект для выполнения запросов
+
+Методы:
+getProducts(): Promise<{ items: IProduct[] }> - получает список товаров с сервера
+
+createOrder(order: IOrder): Promise<{ total: number }> - отправляет заказ на сервер
