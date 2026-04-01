@@ -5,6 +5,7 @@ import { Buyer } from './components/Models/Buyer';
 import { apiProducts } from './utils/data';
 import { Api } from './components/base/Api';
 import { ApiService } from './components/Services/ApiService';
+import { API_URL } from './utils/constants';
 
 
 const catalog = new ProductCatalog();
@@ -47,7 +48,8 @@ buyer.clear();
 console.log('После очистки:', buyer.getData());
 
 
-const api = new Api(import.meta.env.VITE_API_ORIGIN);
+
+const api = new Api(API_URL);
 const apiService = new ApiService(api);
 
 
