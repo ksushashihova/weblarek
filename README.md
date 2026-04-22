@@ -207,3 +207,232 @@ api: IApi  объект для выполнения запросов
 Методы:
 getProducts(): Promise<IProductsResponse>  получает список товаров с сервера
 createOrder(order: IOrder): Promise<IOrderResponse>  отправляет заказ на сервер
+
+## View
+
+### Класс Header (от Component)
+
+Назначение:
+Отображение шапки сайта и счётчика товаров в корзине
+
+Поля:
+basketButton: HTMLButtonElement кнопка открытия корзины
+counterElement: HTMLElement счётчик товаров
+
+Методы:
+setCounter(value: number): void обновляет счётчик
+
+События:
+basket:open пользователь нажал на иконку корзины
+
+### Класс Gallery (от Component)
+
+Назначение:
+Отображения всех карточек товаров
+
+Поля:
+catalogElement: HTMLElement контейнер карточек
+
+Методы:
+setCatalog(items: HTMLElement[]): void генерит список товаров
+
+### Класс Card (от Component)
+
+Назначение:
+Отображение карточки товара
+
+Поля:
+title: HTMLElement
+price: HTMLElement
+image: HTMLImageElement
+category: HTMLElement
+
+Методы:
+render(data: IProduct): void установка данных карточки
+
+### Класс CatalogCard (от Card)
+
+Назначение:
+Карточка товара в каталоге, обрабатывает клик по карточке
+
+События:
+card:select  выбор товара для просмотра
+
+### Класс PreviewCard  (от Card)
+
+Назначение:
+Карточка товара в модальном окне, есть кнопка "Купить / Удалить"
+
+События:
+product:add добавить товар в корзину
+product:remove  удалить товар из корзины
+
+### Класс BasketCard (от Card)
+
+Назначение:
+Карточка товара в корзине, есть кнопка удаления товара
+
+События:
+product:remove удаление товара из корзины
+
+### Класс BasketView (от Component)
+
+Назначение:
+Отображение содержимого корзины
+
+Поля:
+list: HTMLElement список товаров
+total: HTMLElement  итоговая стоимость
+checkoutButton: HTMLButtonElement  кнопка оформления
+
+Методы:
+setItems(items: HTMLElement[]): void  рендер товаров
+setTotal(value: number): void  установка общей стоимости
+toggleButton(state: boolean): void  управление доступностью кнопки
+
+События:
+order:start  пользователь нажал "Оформить заказ"
+
+### Класс Modal
+
+Назначение:
+Отображение модального окна с любым контентом
+
+Поля:
+modal: HTMLElement
+content: HTMLElement
+closeButton: HTMLButtonElement
+
+Методы:
+open(content: HTMLElement): void  открыть модальное окно
+close(): void  закрыть модальное окно
+
+События:
+modal:close закрытие модального окна
+
+### Класс Form (от Component)
+
+Назначение:
+Базовый класс для всех форм
+
+Поля:
+form: HTMLFormElement
+submitButton: HTMLButtonElement
+errors: HTMLElement
+
+Методы:
+setValid(state: boolean): void управление активностью кнопки
+setErrors(message: string): void отображение ошибок
+
+События:
+form:change изменение данных формы
+
+### Класс Form OrderForm (от Form)
+
+Назначение:
+Первая форма оформления заказа (адрес и способ оплаты)
+
+Поля:
+addressInput: HTMLInputElement
+paymentButtons: NodeListOf<HTMLButtonElement>
+
+События:
+order:next переход ко второму шагу оформления
+
+### Класс ContactsForm (от Form)
+
+Назначение:
+Вторая форма оформления заказа (контакты)
+
+Поля:
+emailInput: HTMLInputElement
+phoneInput: HTMLInputElement
+
+События:
+order:submit завершение оформления заказаа
+
+### События View
+
+## card:select (CatalogCard)
+
+Описание:
+Пользователь выбрал товар в каталоге
+
+Данные:
+id товара (IProduct)
+
+## basket:open (Header)
+
+Описание:
+Пользователь открыл корзину
+
+Данные:
+-
+
+## product:add (PreviewCard)
+
+Описание:
+Пользователь добавил товар в корзину
+
+Данные:
+IProduct
+
+## product:remove (PreviewCard / BasketCard)
+
+Описание:
+Пользователь удалил товар из корзины
+
+Данные:
+id товара
+
+## order:start (BasketView)
+
+Описание:
+Пользователь начал оформление заказа
+
+Данные:
+список товаров в корзине
+
+## order:changed (Buyer)
+
+Описание: 
+Изменение данных покупателя.
+
+Данные: 
+Partial<IBuyer> — актуальное состояние данных покупателя.
+
+## order:next (OrderForm)
+
+Описание:
+Пользователь перешёл ко второму шагу оформления заказа
+
+Данные:
+способ оплаты
+адрес доставки
+
+## order:submit (ContactsForm)
+
+Описание:
+Пользователь завершил оформление заказа
+
+Данные:
+email
+телефон
+способ оплаты
+адрес доставки
+
+## form:change (Form)
+
+Описание:
+Изменение данных в форме
+
+Данные:
+частичные данные формы (Partial<IBuyer>)
+
+## modal:close (Modal)
+
+Описание:
+Закрытие модального окна
+
+Данные:
+-
