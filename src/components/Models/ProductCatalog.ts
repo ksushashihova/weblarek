@@ -1,5 +1,6 @@
 import { IProduct } from '../../types';
 import { EventEmitter } from '../base/Events';
+import { CDN_URL } from '../../utils/constants';
 
 export class ProductCatalog {
   private products: IProduct[] = [];
@@ -11,7 +12,7 @@ export class ProductCatalog {
     
   this.products = items.map(item => ({
     ...item,
-    image: `https://larek-api.nomoreparties.co${item.image}`
+    image: `${CDN_URL}${item.image}`
   }));
 
   this.events.emit('catalog:changed');

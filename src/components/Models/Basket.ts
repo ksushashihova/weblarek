@@ -20,6 +20,7 @@ export class Basket {
     this.events.emit('basket:changed', this.items);
   }
 
+
   clear(): void {
     this.items = [];
     this.events.emit('basket:changed', this.items);

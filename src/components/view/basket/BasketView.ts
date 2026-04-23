@@ -27,7 +27,7 @@ export class BasketView extends Component<null> {
   }
 
   setTotal(value: number) {
-    this.total.textContent = `${value} ₽`;
+    this.total.textContent = `${value} синапсов`;
   }
 
   toggleButton(state: boolean) {
