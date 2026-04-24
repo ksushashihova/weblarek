@@ -19,8 +19,6 @@ import { BasketView } from './components/view/basket/BasketView';
 
 import { OrderForm } from './components/view/forms/OrderForm';
 import { ContactsForm } from './components/view/forms/ContactsForm';
-
-
 import { SuccessView } from './components/view/SuccessView';
 
 import { API_URL } from './utils/constants';
@@ -39,15 +37,13 @@ const header = new Header(document.querySelector('.header')!, events);
 const gallery = new Gallery(document.querySelector('.gallery')!);
 const modal = new Modal(document.querySelector('.modal')!, events);
 
-
-
+// ---------- Статичные view ----------
 
 const basketTemplate = document
   .querySelector<HTMLTemplateElement>('#basket')!
   .content.firstElementChild!
   .cloneNode(true) as HTMLElement;
 const basketView = new BasketView(basketTemplate, events);
-
 
 const orderTemplate = document
   .querySelector<HTMLTemplateElement>('#order')!
@@ -61,18 +57,18 @@ const contactsTemplate = document
   .cloneNode(true) as HTMLElement;
 const contactsForm = new ContactsForm(contactsTemplate, events);
 
-
 const successTemplate = document
   .querySelector<HTMLTemplateElement>('#success')!
   .content.firstElementChild!
   .cloneNode(true) as HTMLElement;
 const successView = new SuccessView(successTemplate, events);
 
-
+// Закрытие модалки по событию
 events.on('modal:close', () => {
   modal.close();
 });
 
+// ---------- Каталог ----------
 
 events.on('catalog:changed', () => {
   const products = catalog.getProducts();
@@ -83,15 +79,21 @@ events.on('catalog:changed', () => {
       .content.firstElementChild!
       .cloneNode(true) as HTMLElement;
 
-    const card = new CatalogCard(template, events);
-    card.setData(product);
+    const card = new CatalogCard(template, (id) => {
+      const p = catalog.getProductById(id);
+      if (p) {
+        catalog.setSelectedProduct(p);
+      }
+    });
 
+    card.setData(product);
     return card.render();
   });
 
   gallery.setCatalog(cards);
 });
 
+// ---------- Превью ----------
 
 events.on('preview:changed', () => {
   const product = catalog.getSelectedProduct();
@@ -102,27 +104,24 @@ events.on('preview:changed', () => {
     .content.firstElementChild!
     .cloneNode(true) as HTMLElement;
 
-  const card = new PreviewCard(template, events);
-  card.setData(product, basket.hasItem(product.id));
+  const card = new PreviewCard(template, () => {
+    const p = catalog.getSelectedProduct();
+    if (!p) return;
 
+    if (basket.hasItem(p.id)) {
+      basket.removeItem(p);
+    } else {
+      basket.addItem(p);
+    }
+
+    modal.close();
+  });
+
+  card.setData(product, basket.hasItem(product.id));
   modal.open(card.render());
 });
 
-
-events.on('product:toggle', () => {
-  const product = catalog.getSelectedProduct();
-  if (!product) return;
-
-  if (basket.hasItem(product.id)) {
-    basket.removeItem(product);
-  } else {
-    basket.addItem(product);
-  }
-
-  modal.close();
-});
-
-
+// ---------- Корзина ----------
 
 const renderBasket = () => {
   const items = basket.getItems();
@@ -133,9 +132,11 @@ const renderBasket = () => {
       .content.firstElementChild!
       .cloneNode(true) as HTMLElement;
 
-    const card = new BasketCard(template, events);
-    card.setData(product, index + 1);
+    const card = new BasketCard(template, () => {
+      basket.removeItem(product);
+    });
 
+    card.setData(product, index + 1);
     return card.render();
   });
 
@@ -146,58 +147,30 @@ const renderBasket = () => {
   header.setCounter(basket.getTotalCount());
 };
 
-
 events.on('basket:changed', renderBasket);
-
 
 events.on('basket:open', () => {
   modal.open(basketView.render());
 });
 
-
-events.on<{ id: string }>('card:select', ({ id }) => {
-  const product = catalog.getProductById(id);
-  if (product) {
-    catalog.setSelectedProduct(product);
-  }
-});
-
-
-events.on<{ id: string }>('product:add', ({ id }) => {
-  const product = catalog.getProductById(id);
-
-  if (product && !basket.hasItem(id)) {
-    basket.addItem(product);
-    modal.close();
-  }
-});
-
-events.on<{ id: string }>('product:remove', ({ id }) => {
-  const product = catalog.getProducts().find(p => p.id === id);
-  if (product) {
-    basket.removeItem(product);
-  }
-});
-
+// ---------- Оформление ----------
 
 events.on('order:start', () => {
   modal.open(orderForm.render());
 });
 
-
 events.on('order:next', () => {
   modal.open(contactsForm.render());
 });
 
+events.on<IBuyer>('order:changed', (data) => {
+  orderForm.setPayment(data.payment);
+  orderForm.setFieldValue('address', data.address);
 
-events.on<Partial<IBuyer>>('order:changed', (data) => {
-
-  if (data.payment !== undefined) {
-    orderForm.setPayment(data.payment);
-  }
+  contactsForm.setFieldValue('email', data.email);
+  contactsForm.setFieldValue('phone', data.phone);
 
   const allErrors = buyer.validate();
-
 
   const orderErrors: string[] = [];
   const contactsErrors: string[] = [];
@@ -207,14 +180,11 @@ events.on<Partial<IBuyer>>('order:changed', (data) => {
   if (allErrors.email) contactsErrors.push(allErrors.email);
   if (allErrors.phone) contactsErrors.push(allErrors.phone);
 
-
   const isOrderValid = orderErrors.length === 0;
   const isContactsValid = contactsErrors.length === 0;
 
-
   orderForm.setValid(isOrderValid);
   contactsForm.setValid(isContactsValid);
-
 
   const orderMessage = orderErrors[0] ?? '';
   const contactsMessage = contactsErrors[0] ?? '';
@@ -223,11 +193,9 @@ events.on<Partial<IBuyer>>('order:changed', (data) => {
   contactsForm.setErrors(contactsMessage);
 });
 
-
 events.on('form:change', ({ field, value }) => {
   buyer.setData({ [field]: value });
 });
-
 
 events.on('order:submit', () => {
   const data = buyer.getData();
@@ -256,6 +224,7 @@ events.on('order:submit', () => {
     });
 });
 
+// ---------- Старт ----------
 
 apiService.getProducts()
   .then(data => {

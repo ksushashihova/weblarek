@@ -1,5 +1,5 @@
+// PreviewCard.ts
 import { Card } from './Card';
-import { EventEmitter } from '../../base/Events';
 import { IProduct } from '../../../types';
 import { CDN_URL, categoryMap } from '../../../utils/constants';
 
@@ -9,16 +9,19 @@ export class PreviewCard extends Card {
   private categoryElement: HTMLElement;
   private textElement: HTMLElement | null;
 
-  constructor(container: HTMLElement, private events: EventEmitter) {
+  constructor(
+    container: HTMLElement,
+    private onToggle: () => void
+  ) {
     super(container);
 
     this.button = this.container.querySelector('.card__button')!;
     this.imageElement = this.container.querySelector('.card__image')!;
     this.categoryElement = this.container.querySelector('.card__category')!;
-    this.textElement = this.container.querySelector('.card__text'); // один раз здесь
+    this.textElement = this.container.querySelector('.card__text');
 
     this.button.addEventListener('click', () => {
-      this.events.emit('product:toggle');
+      this.onToggle();
     });
   }
 
@@ -40,11 +43,17 @@ export class PreviewCard extends Card {
       this.categoryElement.classList.add(categoryClass);
     }
 
-
     if (this.textElement) {
       this.textElement.textContent = data.description;
     }
 
-    this.button.textContent = inBasket ? 'Удалить из корзины' : 'Купить';
+    const isPriceless = data.price === null;
+
+    this.button.disabled = isPriceless;
+    this.button.textContent = isPriceless
+      ? 'Недоступно'
+      : inBasket
+        ? 'Удалить из корзины'
+        : 'Купить';
   }
 }
