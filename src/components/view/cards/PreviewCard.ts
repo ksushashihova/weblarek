@@ -1,4 +1,3 @@
-// PreviewCard.ts
 import { Card } from './Card';
 import { IProduct } from '../../../types';
 import { CDN_URL, categoryMap } from '../../../utils/constants';

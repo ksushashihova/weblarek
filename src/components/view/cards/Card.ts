@@ -1,4 +1,3 @@
-// Card.ts
 import { Component } from '../../base/Component';
 import { IProduct } from '../../../types';
 

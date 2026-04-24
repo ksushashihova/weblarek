@@ -37,7 +37,6 @@ const header = new Header(document.querySelector('.header')!, events);
 const gallery = new Gallery(document.querySelector('.gallery')!);
 const modal = new Modal(document.querySelector('.modal')!, events);
 
-// ---------- Статичные view ----------
 
 const basketTemplate = document
   .querySelector<HTMLTemplateElement>('#basket')!
@@ -68,7 +67,6 @@ events.on('modal:close', () => {
   modal.close();
 });
 
-// ---------- Каталог ----------
 
 events.on('catalog:changed', () => {
   const products = catalog.getProducts();
@@ -93,7 +91,6 @@ events.on('catalog:changed', () => {
   gallery.setCatalog(cards);
 });
 
-// ---------- Превью ----------
 
 events.on('preview:changed', () => {
   const product = catalog.getSelectedProduct();
@@ -121,7 +118,6 @@ events.on('preview:changed', () => {
   modal.open(card.render());
 });
 
-// ---------- Корзина ----------
 
 const renderBasket = () => {
   const items = basket.getItems();
@@ -153,7 +149,6 @@ events.on('basket:open', () => {
   modal.open(basketView.render());
 });
 
-// ---------- Оформление ----------
 
 events.on('order:start', () => {
   modal.open(orderForm.render());
@@ -224,7 +219,6 @@ events.on('order:submit', () => {
     });
 });
 
-// ---------- Старт ----------
 
 apiService.getProducts()
   .then(data => {

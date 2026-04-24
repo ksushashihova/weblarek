@@ -1,4 +1,3 @@
-// BasketCard.ts
 import { Card } from './Card';
 import { IProduct } from '../../../types';
 

@@ -36,7 +36,6 @@ export abstract class Form<T> extends Component<T> {
     this.errors.textContent = message;
   }
 
-  // Form.ts (базовый)
   setFieldValue(name: string, value: string) {
     const input = this.container.querySelector<HTMLInputElement>(`[name="${name}"]`);
     if (input) input.value = value;
